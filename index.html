@@ -16,6 +16,7 @@
             font-family: Arial, sans-serif;
             color: white;
             overflow: hidden;
+            background-color: #000;
         }
 
         #background-video {
@@ -50,49 +51,39 @@
         }
 
         .profile-container {
-            background-color: rgba(128, 128, 128, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
+            background-color: rgba(30, 30, 30, 0.7);
+            border-radius: 10px;
             padding: 30px;
-            height: 220px;
-            width: 650px;
+            width: 500px;
             text-align: center;
-            transition: transform 0.2s ease-out;
             display: none;
             position: relative;
-            margin: auto;
-            color: white;
-            overflow: hidden;
-            will-change: transform;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s ease-out;
         }
 
         .profile-header {
-            display: flex;
-            align-items: center;
             margin-bottom: 20px;
-            text-align: left;
         }
 
         .profile-picture {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            position: relative;
-            left: -190px;
             object-fit: cover;
-            opacity: 0.9;
-            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0yusxUfstGj3WFyIzhUziH28rryNkn-kVcw&s');
+            margin: 0 auto;
+            display: block;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background-image: url('pdp.png');
             background-size: cover;
             background-position: center;
-            transition: transform 0.2s ease-out;
         }
 
         .profile-name {
             color: white;
-            position: relative;
-            right: 170px;
-            font-size: 2.8em;
-            transition: transform 0.2s ease-out;
+            font-size: 2em;
+            margin-top: 15px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         .typewriter-container {
@@ -113,21 +104,27 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 20px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 2;
         }
 
         .social-icons a {
             display: inline-block;
             width: 40px;
             height: 40px;
-            margin: 0 15px;
-            transition: transform 0.3s ease;
+            margin: 0 20px;
+            position: relative;
         }
 
         .social-icons img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            filter: brightness(0.9);
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         #view-count {
@@ -147,35 +144,23 @@
             height: 16px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .profile-container {
                 width: 90%;
                 padding: 20px;
-                height: auto;
             }
-
-            .profile-header {
-                flex-direction: column;
-                align-items: center;
-            }
-
+            
             .profile-picture {
-                position: static;
-                left: 0;
-                margin-bottom: 15px;
+                width: 100px;
+                height: 100px;
             }
-
+            
             .profile-name {
-                position: static;
-                right: 0;
-                text-align: center;
-                font-size: 2em;
+                font-size: 1.8em;
             }
-
+            
             .social-icons a {
-                width: 35px;
-                height: 35px;
-                margin: 0 10px;
+                margin: 0 15px;
             }
         }
     </style>
@@ -245,7 +230,7 @@
         entryModal.addEventListener('click', () => {
             bgMusic.play().catch(e => console.log("Music play prevented:", e));
             entryModal.classList.add('hidden');
-            profileContainer.style.display = 'flex';
+            profileContainer.style.display = 'block';
             startTypewriter();
         });
 
@@ -287,37 +272,20 @@
             type();
         }
 
-        // Mouse move effects
-        document.addEventListener('mousemove', (e) => {
-            if (profileContainer.style.display !== 'flex') return;
-            
+        // Mouse move effect (only for profile container)
+        profileContainer.addEventListener('mousemove', (e) => {
             const rect = profileContainer.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
             
-            // Container perspective effect
-            const angleY = (x - centerX) / 20;
-            const angleX = (centerY - y) / 20;
-            profileContainer.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+            const tiltX = (0.5 - y) * 10;
+            const tiltY = (x - 0.5) * 10;
             
-            // Profile picture movement
-            const picX = (x - centerX) / 30;
-            const picY = (y - centerY) / 30;
-            document.querySelector('.profile-picture').style.transform = `translate(${picX}px, ${picY}px)`;
-            
-            // Name movement (opposite direction)
-            const nameX = (centerX - x) / 50;
-            const nameY = (centerY - y) / 50;
-            document.querySelector('.profile-name').style.transform = `translate(${nameX}px, ${nameY}px)`;
+            profileContainer.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
         });
 
-        // Reset transformations when mouse leaves
         profileContainer.addEventListener('mouseleave', () => {
             profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-            document.querySelector('.profile-picture').style.transform = 'translate(0, 0)';
-            document.querySelector('.profile-name').style.transform = 'translate(0, 0)';
         });
 
         // Visibility change
