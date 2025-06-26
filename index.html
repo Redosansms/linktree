@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Welcome!</title>
+    <link href="assets/favicon.png" rel="icon" type="image/jpg"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'VT323', monospace;
+            color: white;
+            transition: filter 0.5s ease;
+            overflow: hidden;
+        }
+
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        #entry-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.9em;
+            cursor: pointer;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+            text-shadow: 0 0 2px white;
+            font-family: 'VT323', monospace;
+        }
+
+        #entry-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #view-count {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            opacity: 0.8;
+        }
+
+        #view-count svg {
+            margin-right: 5px;
+            width: 18px;
+            height: 18px;
+        }
+
+        #view-count span {
+            font-size: 1em;
+        }
+
+        .profile-container {
+            background-color: rgba(128, 128, 128, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 30px;
+            height: 300px;
+            width: 700px;
+            text-align: center;
+            transition: transform 0.2s ease-out;
+            display: none;
+            position: relative;
+            margin: auto;
+            color: white;
+            overflow: hidden;
+        }
+
+        .profile-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            z-index: -1;
+        }
+
+        .profile-container::after {
+            content: "";
+            position: absolute;
+            top: 55%;
+            left: 10%;
+            width: 80%;
+            height: 0.5px;
+            background-color: white;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            text-align: left;
+            justify-content: center;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            opacity: 0.9;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0yusxUfstGj3WFyIzhUziH28rryNkn-kVcw&s');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .profile-name {
+            color: white;
+            font-size: 3em;
+            margin-left: 20px;
+            font-family: 'VT323', monospace;
+        }
+
+        .typewriter-container {
+            height: 60px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .typewriter {
+            font-size: 1.8em;
+            color: white;
+            border-right: 0.15em solid white;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+            letter-spacing: 0.1em;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin: 0 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            transform: scale(1.1);
+        }
+
+        .social-icons img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(0.9);
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                width: 90%;
+                padding: 20px;
+                height: auto;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .profile-name {
+                margin-left: 0;
+                margin-top: 15px;
+                font-size: 2em;
+            }
+
+            .typewriter {
+                font-size: 1.5em;
+            }
+
+            .social-icons a {
+                width: 40px;
+                height: 40px;
+                margin: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video autoplay="" id="background-video" loop="" muted="">
+        <source src="bg.mp4" type="video/mp4"/>
+        Your browser does not support the video tag.
+    </video>
+    <div id="entry-modal">
+        <span id="system-title">
+            〔Click 2 Enter〕
+        </span>
+    </div>
+    <div class="profile-container">
+        <div id="view-count">
+            <svg fill="white" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+            <span></span>
+        </div>
+        <div class="profile-header">
+            <div class="profile-picture"></div>
+            <div class="profile-name">REDHOS</div>
+        </div>
+        <div class="typewriter-container">
+            <div id="dynamic-text" class="typewriter"></div>
+        </div>
+        <div class="social-icons">
+            <a href="https://github.com/Redosansms" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub"/>
+            </a>
+            <a href="https://redosansms.github.io/Redhosgames/" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" alt="Website"/>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Audio Players -->
+    <audio id="bgMusic" loop>
+        <source src="bg.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <audio id="clickSound" src="assets/click.mp3"></audio>
+
+    <script>
+        // View count
+        async function updateViewCountDisplay() {
+            try {
+                const response = await fetch('/functions/v1/increment-view-count');
+                const data = await response.json();
+                if (response.ok) {
+                    document.querySelector('#view-count span').textContent = data.count.toLocaleString();
+                }
+            } catch (error) {
+                document.querySelector('#view-count span').textContent = '???';
+            }
+        }
+        updateViewCountDisplay();
+
+        // Audio elements
+        const bgMusic = document.getElementById('bgMusic');
+        const clickSound = document.getElementById('clickSound');
+        
+        // Set music volume
+        bgMusic.volume = 0.5; // 50% volume
+
+        // Entry modal
+        const entryModal = document.getElementById('entry-modal');
+        const profileContainer = document.querySelector('.profile-container');
+        const backgroundVideo = document.getElementById('background-video');
+
+        entryModal.addEventListener('click', () => {
+            // Play sounds
+            clickSound.play().catch(e => console.log("Click sound prevented:", e));
+            bgMusic.play().catch(e => console.log("Music play prevented:", e));
+            
+            // UI changes
+            entryModal.classList.add('hidden');
+            profileContainer.style.display = 'flex';
+            startTypewriter();
+        });
+
+        // Typewriter effect
+        const texts = ["MODREX THE GOAT", "SAMI THE GOAT", "SIDOX THE GOAT"];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 150;
+
+        function startTypewriter() {
+            const dynamicText = document.getElementById('dynamic-text');
+            
+            function type() {
+                const currentText = texts[textIndex];
+                
+                if (isDeleting) {
+                    dynamicText.textContent = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                    typingSpeed = 50;
+                } else {
+                    dynamicText.textContent = currentText.substring(0, charIndex + 1);
+                    charIndex++;
+                    typingSpeed = 150;
+                }
+                
+                if (!isDeleting && charIndex === currentText.length) {
+                    isDeleting = true;
+                    typingSpeed = 2000; // Pause at end of text
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % texts.length;
+                    typingSpeed = 500; // Pause before next text
+                }
+                
+                setTimeout(type, typingSpeed);
+            }
+            
+            type();
+        }
+
+        // Visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                backgroundVideo.pause();
+                bgMusic.pause();
+            } else {
+                backgroundVideo.play();
+                if (!entryModal.classList.contains('hidden')) {
+                    bgMusic.play();
+                }
+            }
+        });
+
+        // Parallax effect
+        profileContainer.addEventListener('mousemove', (e) => {
+            const rect = profileContainer.getBoundingClientRect();
+            const x = (rect.width / 2 - (e.clientX - rect.left)) / 20;
+            const y = (rect.height / 2 - (e.clientY - rect.top)) / 20;
+            profileContainer.style.transform = `perspective(500px) rotateX(${y}deg) rotateY(${x}deg)`;
+        });
+
+        profileContainer.addEventListener('mouseleave', () => {
+            profileContainer.style.transform = 'perspective(500px) rotateX(0) rotateY(0)';
+        });
+    </script>
+</body>
+</html>
