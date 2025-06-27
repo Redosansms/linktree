@@ -3,17 +3,14 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Welcome!</title>
-    <link href="assets/favicon.png" rel="icon" type="image/jpg"/>
+    <title>REDHOS</title>
+    <link rel="icon" href="pdp.png" type="image/png">
     <style>
         /* Curseur personnalisé */
-        html, body {
+        * {
             cursor: url('cursor.png'), auto;
         }
-        a, button {
-            cursor: url('cursor.png'), pointer;
-        }
-
+        
         body {
             margin: 0;
             padding: 0;
@@ -35,6 +32,29 @@
             height: 100%;
             object-fit: cover;
             z-index: -1;
+        }
+
+        #volume-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        #volume-control svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            fill: white;
+        }
+
+        #volume-slider {
+            width: 100px;
         }
 
         #entry-modal {
@@ -182,6 +202,11 @@
                 width: 35px;
                 height: 35px;
             }
+            
+            #volume-control {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
@@ -190,6 +215,13 @@
         <source src="bg.mp4" type="video/mp4"/>
         Your browser does not support the video tag.
     </video>
+    
+    <div id="volume-control">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+    </div>
     
     <div id="entry-modal">
         <span id="system-title">
@@ -227,6 +259,15 @@
     </audio>
     
     <script>
+        // Volume control
+        const bgMusic = document.getElementById('bgMusic');
+        const volumeSlider = document.getElementById('volume-slider');
+        
+        bgMusic.volume = volumeSlider.value;
+        volumeSlider.addEventListener('input', function() {
+            bgMusic.volume = this.value;
+        });
+
         // View count
         async function updateViewCountDisplay() {
             try {
@@ -244,7 +285,6 @@
         // Entry modal
         const entryModal = document.getElementById('entry-modal');
         const profileContainer = document.querySelector('.profile-container');
-        const bgMusic = document.getElementById('bgMusic');
         const backgroundVideo = document.getElementById('background-video');
 
         entryModal.addEventListener('click', () => {
@@ -320,7 +360,9 @@
         });
 
         document.addEventListener('mouseleave', () => {
-            profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0) scale(1)';
+            if (profileContainer.style.display === 'block') {
+                profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0) scale(1)';
+            }
         });
 
         // Visibility change
