@@ -6,7 +6,6 @@
     <title>REDHOS</title>
     <link rel="icon" href="pdp.png" type="image/png">
     <style>
-        /* Curseur personnalisé */
         * {
             cursor: url('cursor.png'), auto;
         }
@@ -41,9 +40,11 @@
             z-index: 1000;
             display: flex;
             align-items: center;
-            background: rgba(0,0,0,0.5);
+            background: rgba(255,255,255,0.1);
             padding: 5px 10px;
             border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         #volume-control svg {
@@ -51,10 +52,23 @@
             height: 20px;
             margin-right: 10px;
             fill: white;
+            opacity: 0.8;
         }
 
         #volume-slider {
             width: 100px;
+            background: rgba(255,255,255,0.2);
+            height: 4px;
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: white;
         }
 
         #entry-modal {
@@ -87,9 +101,8 @@
             display: none;
             position: relative;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transition: transform 0.2s ease-out;
             transform-style: preserve-3d;
-            will-change: transform;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
         }
@@ -151,7 +164,6 @@
             width: 40px;
             height: 40px;
             margin: 0 20px;
-            transition: transform 0.3s ease;
         }
 
         .social-icons img {
@@ -185,7 +197,6 @@
                 width: 90vw;
                 height: calc(90vw * 9 / 16);
                 padding: 20px;
-                background-color: rgba(0, 0, 0, 0.25);
             }
             
             .profile-picture {
@@ -206,6 +217,11 @@
             #volume-control {
                 top: 10px;
                 right: 10px;
+                padding: 3px 8px;
+            }
+            
+            #volume-slider {
+                width: 80px;
             }
         }
     </style>
@@ -332,7 +348,7 @@
             type();
         }
 
-        // Enhanced mouse move effect
+        // Enhanced mouse move effect with large radius (600px)
         document.addEventListener('mousemove', (e) => {
             if (profileContainer.style.display !== 'block') return;
             
@@ -342,26 +358,35 @@
             
             const relX = e.clientX - centerX;
             const relY = e.clientY - centerY;
-            
-            const rotateY = (relX / rect.width) * 30;
-            const rotateX = -(relY / rect.height) * 30;
-            
-            profileContainer.style.transform = `
-                perspective(1000px)
-                rotateX(${rotateX}deg)
-                rotateY(${rotateY}deg)
-                translateZ(50px)
-            `;
-            
             const distance = Math.sqrt(relX*relX + relY*relY);
-            const maxDistance = Math.sqrt(rect.width*rect.width + rect.height*rect.height)/2;
-            const scale = 1 + (0.1 * (1 - distance/maxDistance));
-            profileContainer.style.transform += ` scale(${scale})`;
+            
+            // Large effect radius (600px)
+            const effectRadius = 600;
+            
+            if (distance < effectRadius) {
+                // Stronger rotation effect (40 degrees max)
+                const rotateY = (relX / effectRadius) * 40;
+                const rotateX = -(relY / effectRadius) * 40;
+                
+                // More pronounced Z translation
+                const translateZ = 60 * (1 - distance/effectRadius);
+                
+                profileContainer.style.transform = `
+                    perspective(1000px)
+                    rotateX(${rotateX}deg)
+                    rotateY(${rotateY}deg)
+                    translateZ(${translateZ}px)
+                `;
+            } else {
+                // Reset if mouse is too far
+                profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            }
         });
 
+        // Reset when mouse leaves
         document.addEventListener('mouseleave', () => {
             if (profileContainer.style.display === 'block') {
-                profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0) scale(1)';
+                profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
             }
         });
 
