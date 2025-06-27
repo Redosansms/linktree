@@ -148,6 +148,20 @@
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
 
+        .rgb-text {
+            animation: rgbAnimation 0.8s linear infinite;
+            opacity: 0.95;
+            text-shadow: 0 0 15px currentColor;
+            font-weight: bold;
+        }
+
+        @keyframes rgbAnimation {
+            0% { color: rgba(255, 0, 0, 0.95); }
+            33% { color: rgba(0, 255, 255, 0.95); }
+            66% { color: rgba(255, 0, 255, 0.95); }
+            100% { color: rgba(255, 255, 0, 0.95); }
+        }
+
         .social-icons {
             display: flex;
             justify-content: center;
@@ -310,36 +324,49 @@
             startTypewriter();
         });
 
-        // Typewriter effect
-        const texts = ["MODREX THE GOAT", "SAMI THE GOAT", "SIDOX THE GOAT"];
+        // Typewriter effect - Optimized version
+        const texts = [
+            "MODREX <span class='rgb-text'>THE GOAT</span>", 
+            "SAMI <span class='rgb-text'>THE GOAT</span>", 
+            "SXIDOX <span class='rgb-text'>THE GOAT</span>"
+        ];
         let textIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
-        let typingSpeed = 150;
+        let typingSpeed = 80;
+        let pauseBeforeDelete = 800;
 
         function startTypewriter() {
             const dynamicText = document.getElementById('dynamic-text');
             
             function type() {
                 const currentText = texts[textIndex];
+                const goatPosition = currentText.indexOf("THE GOAT");
                 
                 if (isDeleting) {
-                    dynamicText.textContent = currentText.substring(0, charIndex - 1);
+                    // Delete faster
+                    dynamicText.innerHTML = currentText.substring(0, charIndex - 1);
                     charIndex--;
-                    typingSpeed = 50;
+                    typingSpeed = 20;
                 } else {
-                    dynamicText.textContent = currentText.substring(0, charIndex + 1);
-                    charIndex++;
-                    typingSpeed = 150;
+                    // When approaching "THE GOAT", skip ahead
+                    if (charIndex >= goatPosition - 3 && charIndex < goatPosition) {
+                        charIndex = goatPosition + "THE GOAT".length;
+                        dynamicText.innerHTML = currentText.substring(0, charIndex);
+                    } else {
+                        dynamicText.innerHTML = currentText.substring(0, charIndex + 1);
+                        charIndex++;
+                    }
+                    typingSpeed = charIndex > goatPosition ? 30 : 80;
                 }
                 
                 if (!isDeleting && charIndex === currentText.length) {
                     isDeleting = true;
-                    typingSpeed = 2000;
+                    typingSpeed = pauseBeforeDelete;
                 } else if (isDeleting && charIndex === 0) {
                     isDeleting = false;
                     textIndex = (textIndex + 1) % texts.length;
-                    typingSpeed = 500;
+                    typingSpeed = 200;
                 }
                 
                 setTimeout(type, typingSpeed);
@@ -360,15 +387,11 @@
             const relY = e.clientY - centerY;
             const distance = Math.sqrt(relX*relX + relY*relY);
             
-            // Large effect radius (600px)
             const effectRadius = 600;
             
             if (distance < effectRadius) {
-                // Stronger rotation effect (40 degrees max)
                 const rotateY = (relX / effectRadius) * 40;
                 const rotateX = -(relY / effectRadius) * 40;
-                
-                // More pronounced Z translation
                 const translateZ = 60 * (1 - distance/effectRadius);
                 
                 profileContainer.style.transform = `
@@ -378,19 +401,16 @@
                     translateZ(${translateZ}px)
                 `;
             } else {
-                // Reset if mouse is too far
                 profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
             }
         });
 
-        // Reset when mouse leaves
         document.addEventListener('mouseleave', () => {
             if (profileContainer.style.display === 'block') {
                 profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
             }
         });
 
-        // Visibility change
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 backgroundVideo.pause();
